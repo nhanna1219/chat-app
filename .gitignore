@@ -1,0 +1,26 @@
+# === Global ===
+*.log
+*.tmp
+*.swp
+.DS_Store
+.env
+*.iml
+
+# === IDEs ===
+.idea/
+
+# === Backend (Spring Boot) ===
+/chat-backend/target/
+/chat-backend/.classpath
+/chat-backend/.project
+/chat-backend/.settings/
+!/chat-backend/src/main/resources/application.properties
+
+# === Frontend (React CRA) ===
+/chat-frontend/node_modules/
+/chat-frontend/build/
+/chat-frontend/.env
+/chat-frontend/.env.local
+/chat-frontend/.env.development.local
+/chat-frontend/.env.test.local
+/chat-frontend/.env.production.local
