@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:3000") // Allow React frontend
+@CrossOrigin(origins = "*") // Allow React frontend
 @RestController
 @RequestMapping("/chat")
 public class ChatGroupController {

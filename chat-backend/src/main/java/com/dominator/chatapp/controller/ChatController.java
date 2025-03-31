@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@CrossOrigin(origins = "http://localhost:3000") // Allow React frontend
+@CrossOrigin(origins = "*") // Allow React frontend
 @RestController
 @RequestMapping("/chat")
 public class ChatController {
@@ -33,6 +33,17 @@ public class ChatController {
             }
             activeUsers.add(username);
             return ResponseEntity.ok(true);
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutChat(@RequestParam String username) {
+        synchronized (activeUsers) {
+            if (activeUsers.remove(username)) {
+                return ResponseEntity.ok(true);
+            } else {
+                return ResponseEntity.ok(false); // user wasn't in the list
+            }
         }
     }
 

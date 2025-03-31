@@ -3,6 +3,7 @@ import stompClient from "./websocket/websocket";
 import ChatRoom from "./components/ChatRoom";
 import ChatInput from "./components/ChatInput";
 import GroupSelection from "./components/GroupSelection";
+import { BACKEND_URL } from "./config";
 
 const App = () => {
   const [username, setUsername] = useState("");
@@ -18,7 +19,7 @@ const App = () => {
 
     const loadChannels = async () => {
       try {
-        const res = await fetch("http://localhost:8080/chat/channels", { mode: "cors" });
+        const res = await fetch(`${BACKEND_URL}/chat/channels`, { mode: "cors" });
         if (!res.ok) throw new Error(`Status: ${res.status}`);
         const data = await res.json();
         setIsBELoaded(true);
@@ -50,28 +51,29 @@ const App = () => {
   useEffect(() => {
     if (!joined) return;
 
-    const handleUnload = () => {
-      if (stompClient.connected) {
-        const leaveMsg = {
-          sender: "System",
-          content: `👋 <strong>${username}</strong> has left the chat.`,
-          groupName: group,
-          system: true,
-          timestamp: new Date().toISOString(),
-        };
-
-        stompClient.publish({
-          destination: "/app/send",
-          body: JSON.stringify(leaveMsg),
-        });
-
-        stompClient.deactivate();
-      }
-    };
-
     window.addEventListener("beforeunload", handleUnload);
     return () => window.removeEventListener("beforeunload", handleUnload);
   }, [joined, username, group]);
+
+  const handleUnload = () => {
+    if (stompClient.connected) {
+      const leaveMsg = {
+        sender: "System",
+        content: `👋 <strong>${username}</strong> has left the chat.`,
+        groupName: group,
+        system: true,
+        timestamp: new Date().toISOString(),
+      };
+
+      stompClient.publish({
+        destination: "/app/send",
+        body: JSON.stringify(leaveMsg),
+      });
+
+      stompClient.deactivate();
+    }
+  };
+
 
 
   // Manage STOMP connection when 'joined' or 'group' changes
@@ -81,7 +83,7 @@ const App = () => {
     const connectAndFetch = async () => {
       // 📨 Fetch chat history
       try {
-        const response = await fetch(`http://localhost:8080/chat/history?groupName=${group}`);
+        const response = await fetch(`${BACKEND_URL}/chat/history?groupName=${group}`);
         const data = await response.json();
 
         setMessages(data);
@@ -142,7 +144,7 @@ const App = () => {
   // Join the chat room
   const joinChat = () => {
     console.log("➡ Sending join request...");
-    fetch("http://localhost:8080/chat/join?username=" + encodeURIComponent(username), {
+    fetch(`${BACKEND_URL}/chat/join?username=` + encodeURIComponent(username), {
       method: "POST",
       mode: "cors",
     })
@@ -225,7 +227,13 @@ const App = () => {
                     <div className="absolute right-0 w-40 bg-white shadow-md rounded-md text-sm opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-150 z-50">
                       <div className="px-4 py-2 border-b text-gray-700 font-medium">{username}</div>
                       <button
-                          onClick={() => {
+                          onClick={async () => {
+                            handleUnload();
+                            await fetch(`${BACKEND_URL}/chat/logout?username=${username}`, {
+                              method: "POST",
+                              mode: "cors",
+                            });
+
                             localStorage.removeItem("chat-username");
                             setUsername("");
                             setJoined(false);

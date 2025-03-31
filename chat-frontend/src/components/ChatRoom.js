@@ -12,11 +12,14 @@ const ChatRoom = ({group, messages, username, latestSender}) => {
     const bottomRef = useRef(null);
 
     useEffect(() => {
-        if (latestSender === username) {
-            bottomRef.current?.scrollIntoView({behavior: "smooth"});
+        const lastMessage = messages[messages.length - 1]?.content;
+        if (
+            latestSender === username ||
+            (latestSender === 'System' && lastMessage?.includes?.(username))
+        ) {
+            bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages, latestSender, username, group]);
-
     return (
         <div>
             <div className="flex items-center gap-2 mb-3">
