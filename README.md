@@ -8,6 +8,8 @@ A fullstack realtime chat application using:
 - 🧩 **MongoDB** for message persistence
 - 🔌 **WebSocket (STOMP)** for instant chat delivery
 
+![image](https://github.com/user-attachments/assets/44222a12-0e49-4f8a-983d-bb7f92deab87)
+
 ---
 
 ## 🚀 Features
